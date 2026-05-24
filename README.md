@@ -129,6 +129,35 @@ pronunciation-helper/
 - All async operations use `async/await` (no `.then()` chains)
 - Decorative SVGs use `aria-hidden="true"`
 
+## Privacy
+
+This extension is designed with privacy as a core principle. It collects no data and makes no network requests.
+
+**What the extension accesses:**
+
+- **Selected text on the page** — Only the word or phrase you actively select, used solely to pass it to the browser's speech synthesis engine
+- **Surrounding text context** — Approximately 200 characters around your selection, analyzed locally to detect the language. This text is never stored or transmitted
+- **Page language attribute** — Reads the `<html lang="...">` attribute as a fallback for language detection
+
+**What the extension does NOT do:**
+
+- Does not collect, store, or transmit any personal data
+- Does not make any network requests — all processing happens locally on your device
+- Does not use cookies, analytics, telemetry, or any third-party services
+- Does not track browsing history, URLs visited, or pages viewed
+- Does not access or store any data beyond the current selection moment
+- Does not use `chrome.storage` or any persistent storage mechanism
+- Does not fingerprint your device or browser
+
+**Permissions explained:**
+
+| Permission | Why it's needed |
+|------------|----------------|
+| `contextMenus` | Registers the "Pronounce" right-click menu item |
+| Content script on `<all_urls>` | Enables the selection popup on any webpage you visit |
+
+All speech synthesis is handled by your operating system's built-in text-to-speech engine (Web Speech API). No audio data leaves your device.
+
 ## License
 
 MIT
