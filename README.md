@@ -16,32 +16,52 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
 
 ## Installation
 
-### Chrome
+### Step 1: Download the extension
 
-1. Open Chrome and navigate to `chrome://extensions`
-2. Enable "Developer mode" (toggle in the top-right corner)
-3. Click "Load unpacked"
-4. Select this project directory
+If you're not familiar with Git, the easiest way to get the extension files is:
 
-### Edge
+1. Go to the GitHub repository page
+2. Click the green **"Code"** button near the top-right
+3. Click **"Download ZIP"**
+4. Once downloaded, find the ZIP file (usually in your Downloads folder)
+5. **Extract/unzip** the file — this creates a folder called `pronunciation-helper-main`
 
-1. Open Edge and navigate to `edge://extensions`
-2. Enable "Developer mode" (toggle in the bottom-left)
-3. Click "Load unpacked"
-4. Select this project directory
+You now have the extension files on your computer. Proceed to Step 2 for your browser.
 
-### Firefox
+### Step 2: Load the extension in your browser
 
-1. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`
-2. Click "Load Temporary Add-on..."
-3. Select the `manifest.json` file from this directory
+#### Chrome
 
-### Firefox (permanent, unsigned)
+1. Open Chrome and type `chrome://extensions` in the address bar, then press Enter
+2. Turn on **"Developer mode"** using the toggle in the top-right corner
+3. Click the **"Load unpacked"** button that appears
+4. Navigate to the folder you extracted and select it (the folder containing `manifest.json`)
+5. The extension is now active — you'll see it in your extensions list
 
-1. Navigate to `about:config`
-2. Set `xpinstall.signatures.required` to `false` (Developer Edition / Nightly only)
-3. Package the extension as a `.zip` and rename to `.xpi`
-4. Drag the `.xpi` file into Firefox
+#### Edge
+
+1. Open Edge and type `edge://extensions` in the address bar, then press Enter
+2. Turn on **"Developer mode"** using the toggle in the bottom-left
+3. Click **"Load unpacked"**
+4. Navigate to the folder you extracted and select it
+5. The extension is now active
+
+#### Firefox
+
+1. Open Firefox and type `about:debugging#/runtime/this-firefox` in the address bar, then press Enter
+2. Click **"Load Temporary Add-on..."**
+3. Navigate to the folder you extracted and select the **`manifest.json`** file inside it
+4. The extension is now active (note: in Firefox, temporary add-ons are removed when you close the browser)
+
+> **Firefox note:** Temporary extensions don't persist across browser restarts. You'll need to reload it each time you restart Firefox, unless you use Firefox Developer Edition with unsigned extension support.
+
+### Updating the extension
+
+When a new version is available:
+
+1. Download the new ZIP from GitHub (same steps as above)
+2. Extract it, replacing the old folder
+3. In your browser's extensions page, click **"Reload"** (or remove and re-add it)
 
 ## Usage
 
