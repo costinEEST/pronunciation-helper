@@ -120,7 +120,7 @@ pronunciation-helper/
 ## Technical Notes
 
 - Uses **Manifest V3** for both Chrome and Firefox compatibility
-- Background script runs as a **service worker** (no persistent state in memory)
+- Background script declares both `service_worker` (Chrome/Edge) and `scripts` (Firefox) — each browser uses its supported field and ignores the other
 - Content scripts use **namespaced CSS classes** to avoid conflicts with page styles
 - CSS uses **rem units**, **logical properties**, and **CSS custom properties** for theming
 - Progressively enhances with Chrome's **LanguageDetector API** (138+) without requiring it
