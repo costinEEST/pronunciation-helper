@@ -115,6 +115,12 @@ if [ "$RELEASE" = true ]; then
     exit 1
   fi
 
+  if ! gh auth status &> /dev/null; then
+    echo "Error: GitHub CLI is not authenticated."
+    echo "Run: gh auth login"
+    exit 1
+  fi
+
   TAG="v${VERSION}"
 
   echo "Publishing GitHub Release ${TAG}..."
