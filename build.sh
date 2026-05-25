@@ -83,6 +83,7 @@ web-ext sign \
   --artifacts-dir="$DIST_DIR" \
   --api-key="$MOZILLA_JWT_ISSUER" \
   --api-secret="$MOZILLA_JWT_SECRET" \
+  --channel=unlisted \
   --ignore-files=dist/ .git/ .agents/ .kiro/ .gitignore skills-lock.json README.md build.sh
 
 # Rename the signed XPI to our naming convention

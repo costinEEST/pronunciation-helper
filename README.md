@@ -252,8 +252,19 @@ The script will:
 3. Verify that `MOZILLA_JWT_ISSUER` and `MOZILLA_JWT_SECRET` are set
 4. Create a `dist/` folder with:
    - `pronunciation-helper-chrome-vX.X.X.zip`
-   - `pronunciation-helper-firefox-vX.X.X.xpi` (signed)
+   - `pronunciation-helper-firefox-vX.X.X.xpi` (signed as `unlisted`)
 5. With `--release`: create a git tag, push it, and publish a GitHub Release with both files attached
+
+### Firefox signing channel
+
+Mozilla requires a `--channel` when signing extensions. The build script uses `unlisted`. Here's what the options mean:
+
+| Channel | What it means | When to use |
+|---------|---------------|-------------|
+| `unlisted` | Signed by Mozilla but **not published** on addons.mozilla.org. You distribute the `.xpi` yourself (e.g., via GitHub Releases). | Self-distributed extensions like this one. |
+| `listed` | Signed **and published** on addons.mozilla.org. Goes through Mozilla's review process and becomes publicly searchable. | When you want the extension available in the Firefox Add-ons store. |
+
+We use `unlisted` because the extension is distributed through GitHub Releases, not the Firefox Add-ons store. Users install it manually from the `.xpi` file. Mozilla still signs it, which means it works in regular Firefox without disabling signature checks.
 
 ### Publishing to GitHub Releases
 
