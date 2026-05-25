@@ -21,7 +21,10 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
 - [Building a Release](#building-a-release)
   - [Prerequisites](#prerequisites)
   - [Running the Build Script](#running-the-build-script)
-  - [Publishing to GitHub Releases](#publishing-to-github-releases)
+  - [Firefox Signing Channel](#firefox-signing-channel)
+  - [Full Release Workflow](#full-release-workflow)
+  - [GitHub CLI Authentication](#github-cli-authentication)
+  - [Troubleshooting the Build](#troubleshooting-the-build)
 - [Project Structure](#project-structure)
 - [Technical Notes](#technical-notes)
 - [License](#license)
@@ -219,7 +222,7 @@ All speech synthesis is handled by your operating system's built-in text-to-spee
 
 ## Building a Release
 
-The project includes a `build.sh` script that produces both browser packages in one step:
+The project includes a `build.sh` script that produces both browser packages and optionally publishes them to GitHub:
 - A `.zip` for Chrome/Edge (load unpacked)
 - A signed `.xpi` for Firefox (permanent install)
 
@@ -235,6 +238,9 @@ The project includes a `build.sh` script that produces both browser packages in 
      export MOZILLA_JWT_SECRET="your-jwt-secret"
      ```
    - Restart your terminal (or run `source ~/.zshenv`)
+3. **GitHub CLI** (only for `--release` flag)
+   - Install: `brew install gh`
+   - Authenticate — see [GitHub CLI authentication](#github-cli-authentication) below
 
 ### Running the build script
 
@@ -255,6 +261,8 @@ The script will:
    - `pronunciation-helper-firefox-vX.X.X.xpi` (signed as `unlisted`)
 5. With `--release`: create a git tag, push it, and publish a GitHub Release with both files attached
 
+> **Note:** If the signed `.xpi` already exists in `dist/` for the current version, the script skips the signing step. This avoids the "already submitted" error from Mozilla when re-running the script.
+
 ### Firefox signing channel
 
 Mozilla requires a `--channel` when signing extensions. The build script uses `unlisted`. Here's what the options mean:
@@ -266,23 +274,62 @@ Mozilla requires a `--channel` when signing extensions. The build script uses `u
 
 We use `unlisted` because the extension is distributed through GitHub Releases, not the Firefox Add-ons store. Users install it manually from the `.xpi` file. Mozilla still signs it, which means it works in regular Firefox without disabling signature checks.
 
-### Publishing to GitHub Releases
-
-The easiest way is to use the `--release` flag:
+### Full release workflow
 
 ```bash
-# Make sure your changes are committed and pushed first
+# 1. Bump the version in manifest.json (e.g., "1.0.0" → "1.1.0")
+
+# 2. Commit and push
 git add -A
-git commit -m "chore: prepare v1.0.0 release"
+git commit -m "chore: prepare v1.1.0 release"
 git push origin main
 
-# Build + publish in one command
+# 3. Build and publish
 ./build.sh --release
 ```
 
-This requires the [GitHub CLI](https://cli.github.com/) (`brew install gh`, then `gh auth login`).
+That's it. If there's nothing to commit (code is already pushed), skip straight to step 3.
 
-The script will tag the current commit with the version from `manifest.json`, push the tag, and create a release with both artifacts attached. After that, users can download the files from the [Releases page](../../releases).
+### GitHub CLI authentication
+
+The `--release` flag requires the GitHub CLI (`gh`) to be installed and authenticated.
+
+**Recommended approach — personal access token:**
+
+1. Go to https://github.com/settings/tokens/new
+2. Give it a name (e.g., `gh-cli`)
+3. Set an expiration (e.g., 90 days)
+4. Select these scopes: **repo**, **workflow**, **read:org**
+5. Click **Generate token** and copy it
+6. Run:
+   ```bash
+   echo "YOUR_TOKEN" | gh auth login -h github.com --with-token
+   ```
+7. Verify:
+   ```bash
+   gh auth status
+   ```
+
+**Alternative — browser-based login:**
+
+```bash
+gh auth login -h github.com -s workflow -w
+```
+
+This opens a browser for OAuth authentication. Pick the correct GitHub account when prompted.
+
+> **If the browser flow hangs** (terminal shows no progress after completing the browser steps): this is a known issue on macOS with multiple GitHub accounts or keychain conflicts. Cancel with Ctrl+C, then use the personal access token approach above instead.
+
+### Troubleshooting the build
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| `This upload has already been submitted` | You already signed this exact version with Mozilla | The script skips signing if the `.xpi` exists in `dist/`. If you deleted it, bump the version in `manifest.json` and rebuild. |
+| `MOZILLA_JWT_ISSUER and MOZILLA_JWT_SECRET must be set` | Environment variables not loaded | Add them to `~/.zshenv` and run `source ~/.zshenv`, or restart your terminal. |
+| `GitHub CLI is not authenticated` | `gh` has no valid token | Run the token-based auth (see above). |
+| `missing required scope 'read:org'` | Token doesn't have enough permissions | Regenerate the token with scopes: **repo**, **workflow**, **read:org**. |
+| `Failed to create release, "workflow" scope may be required` | Token missing `workflow` scope | Same fix — regenerate with all three scopes. |
+| Firefox signing hangs or times out | Mozilla's signing queue is slow | Wait a few minutes and retry. The `--timeout` flag can be added to `web-ext sign` if needed. |
 
 ## Project Structure
 

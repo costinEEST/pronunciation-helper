@@ -52,6 +52,7 @@ fi
 
 DIST_DIR="dist"
 CHROME_FILE="${DIST_DIR}/pronunciation-helper-chrome-v${VERSION}.zip"
+FIREFOX_FILE="${DIST_DIR}/pronunciation-helper-firefox-v${VERSION}.xpi"
 
 # Extension source files to include
 FILES=(
@@ -75,30 +76,46 @@ echo ""
 
 # --- Build and sign Firefox XPI ---
 
-echo "Signing Firefox extension with web-ext..."
-echo ""
-
-web-ext sign \
-  --source-dir=. \
-  --artifacts-dir="$DIST_DIR" \
-  --api-key="$MOZILLA_JWT_ISSUER" \
-  --api-secret="$MOZILLA_JWT_SECRET" \
-  --channel=unlisted \
-  --ignore-files=dist/ .git/ .agents/ .kiro/ .gitignore skills-lock.json README.md build.sh
-
-# Rename the signed XPI to our naming convention
-SIGNED_XPI=$(find "$DIST_DIR" -name '*.xpi' -newer "$CHROME_FILE" | head -1)
-
-if [ -n "$SIGNED_XPI" ]; then
-  FIREFOX_FILE="${DIST_DIR}/pronunciation-helper-firefox-v${VERSION}.xpi"
-  mv "$SIGNED_XPI" "$FIREFOX_FILE"
-  echo ""
-  echo "✓ Firefox: $FIREFOX_FILE (signed)"
+# Skip signing if the signed XPI already exists for this version
+if [ -f "$FIREFOX_FILE" ]; then
+  echo "✓ Firefox: $FIREFOX_FILE already exists, skipping signing."
 else
+  echo "Signing Firefox extension with web-ext..."
   echo ""
-  echo "⚠ Firefox signing may have failed. Check web-ext output above."
-  echo "  The XPI might still be processing — Mozilla sometimes takes a few minutes."
-  exit 1
+
+  SIGN_OUTPUT=$(web-ext sign \
+    --source-dir=. \
+    --artifacts-dir="$DIST_DIR" \
+    --api-key="$MOZILLA_JWT_ISSUER" \
+    --api-secret="$MOZILLA_JWT_SECRET" \
+    --channel=unlisted \
+    --ignore-files=dist/ .git/ .agents/ .kiro/ .gitignore skills-lock.json README.md build.sh .amo-upload-uuid 2>&1) || {
+      # Check if the error is "already submitted" (version already signed)
+      if echo "$SIGN_OUTPUT" | grep -q "already been submitted"; then
+        echo "⚠ Version ${VERSION} was already signed by Mozilla."
+        echo "  The .xpi from a previous build should still be valid."
+        echo "  If you need to re-sign, bump the version in manifest.json first."
+        exit 1
+      else
+        echo "$SIGN_OUTPUT"
+        exit 1
+      fi
+    }
+
+  echo "$SIGN_OUTPUT"
+
+  # Rename the signed XPI to our naming convention
+  SIGNED_XPI=$(find "$DIST_DIR" -name '*.xpi' -not -name "pronunciation-helper-*" | head -1)
+
+  if [ -n "$SIGNED_XPI" ]; then
+    mv "$SIGNED_XPI" "$FIREFOX_FILE"
+    echo ""
+    echo "✓ Firefox: $FIREFOX_FILE (signed)"
+  else
+    echo ""
+    echo "⚠ Firefox signing may have failed. Check output above."
+    exit 1
+  fi
 fi
 
 echo ""
@@ -112,13 +129,22 @@ if [ "$RELEASE" = true ]; then
   if ! command -v gh &> /dev/null; then
     echo "Error: GitHub CLI (gh) is not installed."
     echo "Install it with: brew install gh"
-    echo "Then authenticate: gh auth login"
+    echo "Then authenticate with a personal access token:"
+    echo "  echo \"YOUR_TOKEN\" | gh auth login -h github.com --with-token"
+    echo ""
+    echo "Token needs scopes: repo, workflow, read:org"
+    echo "Generate one at: https://github.com/settings/tokens/new"
     exit 1
   fi
 
   if ! gh auth status &> /dev/null; then
     echo "Error: GitHub CLI is not authenticated."
-    echo "Run: gh auth login"
+    echo ""
+    echo "Authenticate with a personal access token:"
+    echo "  echo \"YOUR_TOKEN\" | gh auth login -h github.com --with-token"
+    echo ""
+    echo "Token needs scopes: repo, workflow, read:org"
+    echo "Generate one at: https://github.com/settings/tokens/new"
     exit 1
   fi
 
@@ -145,5 +171,4 @@ if [ "$RELEASE" = true ]; then
 
   echo ""
   echo "✓ Release ${TAG} published to GitHub."
-  echo "  https://github.com/costinEEST/pronunciation-helper/releases/tag/${TAG}"
 fi
