@@ -270,13 +270,17 @@ const LanguageDetector = (() => {
 
   /**
    * Detect language using the heuristic (fallback) approach.
+   * Scores both the selected text and surrounding context,
+   * giving priority to the selected text itself.
    * @param {string} surroundingText - Text context around the selection
+   * @param {string} selectedText - The actual selected text
    * @returns {string} Detected language code
    */
-  function detectHeuristic(surroundingText) {
+  function detectHeuristic(surroundingText, selectedText = "") {
     const pageLang = getPageLanguage();
 
-    if (!surroundingText || surroundingText.trim().length < 10) {
+    const textToAnalyze = selectedText || surroundingText;
+    if (!textToAnalyze || textToAnalyze.trim().length < 10) {
       return pageLang;
     }
 
@@ -285,7 +289,16 @@ const LanguageDetector = (() => {
     let detectedLang = pageLang;
 
     for (const langCode of Object.keys(LANGUAGE_MARKERS)) {
-      scores[langCode] = scoreLanguage(surroundingText, langCode);
+      // Score the selected text with higher weight (x3)
+      const selectionScore = selectedText
+        ? scoreLanguage(selectedText, langCode) * 3
+        : 0;
+      // Score surrounding context with normal weight
+      const contextScore = surroundingText
+        ? scoreLanguage(surroundingText, langCode)
+        : 0;
+
+      scores[langCode] = selectionScore + contextScore;
       if (scores[langCode] > maxScore) {
         maxScore = scores[langCode];
         detectedLang = langCode;
@@ -311,8 +324,9 @@ const LanguageDetector = (() => {
    * @returns {string} BCP 47 language tag (e.g., "de", "en", "fr")
    */
   function detect(selection) {
+    const selectedText = selection ? selection.toString().trim() : "";
     const surroundingText = getSurroundingText(selection);
-    return detectHeuristic(surroundingText);
+    return detectHeuristic(surroundingText, selectedText);
   }
 
   /**
@@ -322,6 +336,7 @@ const LanguageDetector = (() => {
    * @returns {Promise<string>} BCP 47 language tag
    */
   async function detectAsync(selection) {
+    const selectedText = selection ? selection.toString().trim() : "";
     const surroundingText = getSurroundingText(selection);
 
     // Try native detector first (Chrome 138+)
@@ -336,7 +351,7 @@ const LanguageDetector = (() => {
       }
     }
 
-    return detectHeuristic(surroundingText);
+    return detectHeuristic(surroundingText, selectedText);
   }
 
   /**

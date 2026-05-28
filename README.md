@@ -151,11 +151,12 @@ Firefox requires extensions to be **signed** for permanent installation. The `.x
 The extension uses a multi-signal approach with progressive enhancement:
 
 1. **Native API (Chrome 138+)** — Uses the browser's built-in `LanguageDetector` API when available for high-accuracy detection
-2. **Surrounding context** — Analyzes ~200 characters around the selected word
-3. **Common word matching** — Checks for function words (articles, prepositions, conjunctions) typical of each language
-4. **Morphological patterns** — Looks for language-specific suffixes and character patterns (e.g., German umlauts, French accents, Cyrillic characters)
-5. **Confidence threshold** — Falls back to the page's `lang` attribute if detection confidence is too low
-6. **Page language fallback** — Uses the HTML `lang` attribute as a baseline; defaults to German if unset
+2. **Selected text priority** — Scores the selected text itself with 3x weight, so the language of what you selected takes precedence over the surrounding page content
+3. **Surrounding context** — Analyzes ~200 characters around the selected word as a secondary signal
+4. **Common word matching** — Checks for function words (articles, prepositions, conjunctions) typical of each language
+5. **Morphological patterns** — Looks for language-specific suffixes and character patterns (e.g., German umlauts, French accents, Cyrillic characters)
+6. **Confidence threshold** — Falls back to the page's `lang` attribute if detection confidence is too low
+7. **Page language fallback** — Uses the HTML `lang` attribute as a baseline; defaults to German if unset
 
 ## Supported Languages
 
