@@ -342,8 +342,14 @@ pronunciation-helper/
 ├── language-detector.js   # Language detection with native API progressive enhancement
 ├── build.sh               # Build script — produces Chrome .zip and signed Firefox .xpi
 ├── icons/
-│   ├── icon-48.svg
-│   └── icon-96.svg
+│   ├── icon-16.svg        # Source SVG (16px)
+│   ├── icon-16.png        # Generated PNG for toolbar
+│   ├── icon-48.svg        # Source SVG (48px)
+│   ├── icon-48.png        # Generated PNG for extensions page
+│   ├── icon-96.svg        # Source SVG (96px)
+│   ├── icon-96.png        # Generated PNG for high-DPI
+│   ├── icon-128.svg       # Source SVG (128px)
+│   └── icon-128.png       # Generated PNG for Chrome Web Store
 ├── dist/                  # Build output (git-ignored)
 └── README.md
 ```
@@ -359,6 +365,41 @@ pronunciation-helper/
 - No `eval()`, no inline scripts — fully CSP-compliant
 - All async operations use `async/await` (no `.then()` chains)
 - Decorative SVGs use `aria-hidden="true"`
+
+### Icons
+
+Chrome does **not** support SVG for extension icons — it shows a generic puzzle-piece icon if you only provide SVGs. The manifest must reference PNG files.
+
+The SVG files are the source of truth. They use inline `<style>` blocks with CSS classes for maintainability. To optimize them, run them through [SVGOMG](https://jakearchibald.github.io/svgomg/).
+
+**Regenerating PNGs from SVGs:**
+
+If you modify the SVG icons, regenerate the PNGs using `sharp-cli`:
+
+```bash
+npx sharp-cli --input icons/icon-16.svg --output icons/icon-16.png resize 16 16
+npx sharp-cli --input icons/icon-48.svg --output icons/icon-48.png resize 48 48
+npx sharp-cli --input icons/icon-96.svg --output icons/icon-96.png resize 96 96
+npx sharp-cli --input icons/icon-128.svg --output icons/icon-128.png resize 128 128
+```
+
+The manifest references the PNGs:
+
+```json
+"icons": {
+  "16": "icons/icon-16.png",
+  "48": "icons/icon-48.png",
+  "96": "icons/icon-96.png",
+  "128": "icons/icon-128.png"
+}
+```
+
+| Size | Used for |
+|------|----------|
+| 16px | Toolbar icon, favicon in extension pages |
+| 48px | Extensions management page (`chrome://extensions`) |
+| 96px | Firefox add-ons page |
+| 128px | Chrome Web Store listing |
 
 ## License
 
