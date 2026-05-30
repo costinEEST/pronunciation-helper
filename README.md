@@ -30,6 +30,7 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
 - [Project Structure](#project-structure)
 - [Technical Notes](#technical-notes)
   - [Icons](#icons)
+- [Changelog](#changelog)
 - [License](#license)
 
 ## Features
@@ -405,6 +406,36 @@ The manifest references the PNGs:
 | 48px | Extensions management page (`chrome://extensions`) |
 | 96px | Firefox add-ons page |
 | 128px | Chrome Web Store listing |
+
+## Changelog
+
+### 1.2.1 — May 30, 2026
+
+- Added `data_collection_permissions` to manifest for Mozilla compliance
+- Added Changelog section to README
+
+### 1.2.0 — May 30, 2026
+
+- Added Romanian language support (with and without diacritics)
+- Added Romanian-specific morphological patterns (-ului, -elor, -ilor, -tii, -atile)
+- Updated README: supported languages count, Table of Contents fixes
+
+### 1.1.0 — May 28, 2026
+
+- Prioritized selected text in language detection over surrounding context (3x weight)
+- Switched to PNG icons for Chrome toolbar compatibility
+- Documented full release workflow with troubleshooting and fallbacks
+
+### 1.0.0 — May 25, 2026
+
+- Initial release
+- Selection popup with play button for pronunciation
+- Context menu integration ("Pronounce" right-click option)
+- Heuristic language detection for 13 languages
+- Progressive enhancement with Chrome's native LanguageDetector API (138+)
+- Cross-browser support (Chrome, Firefox, Edge)
+- Accessible: ARIA live region, keyboard dismissal, focus-visible styles
+- Fully offline — no network requests, no data collection
 
 ## License
 
