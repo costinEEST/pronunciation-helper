@@ -144,11 +144,73 @@
     utterance.rate = 0.9;
     utterance.pitch = 1;
 
-    // Try to find a voice matching the language
+    // Try to find the best quality voice matching the language.
+    // Firefox on macOS lists novelty voices (Albert, Bells, Trinoids, etc.) alongside
+    // real voices, so we rank voices by quality heuristics.
     const voices = window.speechSynthesis.getVoices();
-    const matchingVoice = voices.find((v) => v.lang.startsWith(lang));
-    if (matchingVoice) {
-      utterance.voice = matchingVoice;
+    const langVoices = voices.filter((v) => v.lang.startsWith(lang));
+
+    if (langVoices.length > 0) {
+      // Known high-quality macOS/system voices per language
+      const preferredVoices = new Set([
+        "samantha", "daniel", "karen", "moira", "tessa", "rishi",
+        "aman", "tara", "flo", "reed", "sandy", "shelley",
+        "grandma", "grandpa", "rocko", "eddy",
+        "thomas", "audrey", "aurelie", "amelie",
+        "anna", "petra", "markus",
+        "jorge", "monica", "paulina", "luciana",
+        "alice", "luca",
+        "yelda", "mariska",
+        "lesya", "milena", "yuri",
+        "melina", "nikos",
+      ]);
+
+      // Known novelty/joke voices on macOS — these sound robotic or distorted
+      const noveltyVoices = new Set([
+        "albert", "bad news", "bahh", "bells", "boing", "bubbles",
+        "cellos", "good news", "jester", "junior", "kathy", "fred",
+        "organ", "superstar", "ralph", "trinoids", "whisper",
+        "wobble", "zarvox",
+      ]);
+
+      const scored = langVoices.map((voice) => {
+        let score = 0;
+        const name = voice.name.toLowerCase();
+
+        // Penalize known low-quality/novelty voices
+        if (name.includes("espeak") || name.includes("mbrola")) {
+          score -= 10;
+        }
+        if (noveltyVoices.has(name)) {
+          score -= 10;
+        }
+
+        // Boost known high-quality voices
+        const baseName = name.split("(")[0].trim();
+        if (preferredVoices.has(baseName)) {
+          score += 8;
+        }
+
+        // Prefer premium/cloud voices
+        if (name.includes("google") || name.includes("microsoft") || name.includes("apple")) {
+          score += 5;
+        }
+
+        // Prefer local (OS-level) voices
+        if (voice.localService) {
+          score += 2;
+        }
+
+        // Prefer voices marked as default
+        if (voice.default) {
+          score += 3;
+        }
+
+        return { voice, score };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      utterance.voice = scored[0].voice;
     }
 
     // Visual feedback on the button

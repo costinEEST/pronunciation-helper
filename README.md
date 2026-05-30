@@ -409,6 +409,11 @@ The manifest references the PNGs:
 
 ## Changelog
 
+### 1.3.0 — May 30, 2026
+
+- Improved voice selection: penalizes macOS novelty voices (Albert, Bells, Trinoids, etc.) and prefers high-quality voices (Samantha, Daniel, Karen, Flo, Reed)
+- Fixed poor voice quality in Firefox on macOS
+
 ### 1.2.1 — May 30, 2026
 
 - Added `data_collection_permissions` to manifest for Mozilla compliance
