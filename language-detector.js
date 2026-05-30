@@ -155,6 +155,33 @@ const LanguageDetector = (() => {
       ]),
       patterns: [/\w+us$/i, /\w+um$/i, /\w+orum$/i, /\w+arum$/i, /\w+ibus$/i, /\w+tion\w*/i],
     },
+    ro: {
+      words: new Set([
+        // With diacritics
+        "și", "este", "sunt", "care", "din", "pentru", "sau", "dar",
+        "mai", "fost", "poate", "foarte", "doar", "aici", "acolo",
+        "acum", "apoi", "când", "unde", "cum", "cine", "toate",
+        "acest", "această", "aceste", "aceștia", "alte", "alți",
+        "între", "despre", "prin", "peste", "fără", "după", "până",
+        "într", "într-un", "într-o", "dintr", "printr", "asupra",
+        "precum", "totuși", "deci", "încă", "mereu", "niciodată",
+        "nimic", "ceva", "fiecare", "oricare", "orice", "nimeni",
+        "cineva", "altceva", "altcineva", "undeva", "nicăieri",
+        "bine", "rău", "mult", "puțin", "avea", "face", "spune",
+        "trebui", "putea", "veni", "merge", "ști", "vedea", "lua",
+        "da", "nu", "fie", "ori", "nici", "iar", "deja", "chiar",
+        "așa", "astfel", "atunci", "acesta", "aceasta", "cele",
+        "cei", "lui", "lor", "nostru", "vostru", "meu", "tău",
+        // Without diacritics (informal Romanian online)
+        "si", "cand", "unde", "intre", "despre", "fara", "dupa",
+        "pana", "intr", "intr-un", "intr-o", "totusi", "inca",
+        "niciodata", "nicaieri", "rau", "putin", "sti", "asa",
+        "acesta", "aceasta", "acestia", "alti", "tau",
+        "informatii", "comunitate", "comunitatii", "orasului",
+        "localitatile", "cetatenii", "apartinand", "apartinatoare",
+      ]),
+      patterns: [/[ăâîșț]/i, /\w+ului$/i, /\w+elor$/i, /\w+ilor$/i, /\w+ească$/i, /\w+ție$/i, /\w+tii$/i, /\w+atile$/i],
+    },
     he: {
       words: new Set([
         "של", "על", "את", "זה", "לא", "כי", "גם", "אם", "או",

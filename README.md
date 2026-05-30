@@ -11,6 +11,8 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
   - [Edge](#edge)
   - [Firefox](#firefox)
   - [Updating](#updating-the-extension)
+    - [Chrome / Edge](#chrome--edge)
+    - [Firefox](#firefox-1)
   - [Troubleshooting](#troubleshooting)
 - [Usage](#usage)
 - [How Language Detection Works](#how-language-detection-works)
@@ -27,13 +29,14 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
   - [Troubleshooting the Build](#troubleshooting-the-build)
 - [Project Structure](#project-structure)
 - [Technical Notes](#technical-notes)
+  - [Icons](#icons)
 - [License](#license)
 
 ## Features
 
 - **Selection popup** — Select any word and a small popup appears above it with a play button
 - **Context menu** — Right-click a selected word and choose "Pronounce" from the menu
-- **Language detection** — Analyzes surrounding words to detect the language (13 languages supported)
+- **Language detection** — Analyzes surrounding words to detect the language (14 languages supported)
 - **Native AI detection** — Progressively enhances with Chrome's built-in LanguageDetector API (138+) when available
 - **Web Speech API** — Uses the browser's built-in speech synthesis for pronunciation
 - **Cross-browser** — Works in both Chrome (MV3) and Firefox (MV3, 109+)
@@ -168,6 +171,7 @@ The extension uses a multi-signal approach with progressive enhancement:
 | es   | Spanish    |
 | it   | Italian    |
 | pt   | Portuguese |
+| ro   | Romanian   |
 | tr   | Turkish    |
 | hu   | Hungarian  |
 | uk   | Ukrainian  |

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Pronunciation Helper",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Select a word on any webpage to hear its pronunciation. Detects language from surrounding context.",
   "permissions": [
     "contextMenus"
