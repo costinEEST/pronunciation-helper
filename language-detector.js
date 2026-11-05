@@ -343,14 +343,23 @@ const LanguageDetector = (() => {
     return detectedLang;
   }
 
-  /**
-   * Detect the language of the selected text using surrounding context.
-   * Uses native LanguageDetector API when available (Chrome 138+),
-   * falls back to heuristic detection.
-   * @param {Selection} selection - The current text selection
-   * @returns {string} BCP 47 language tag (e.g., "de", "en", "fr")
-   */
+  /** Read the nearest language declaration that contains the whole selection. */
+  function getSelectionLanguage(selection) {
+    if (!selection || selection.rangeCount === 0) return "";
+
+    const container = selection.getRangeAt(0).commonAncestorContainer;
+    const element = container.nodeType === 1 ? container : container.parentElement;
+    const declared = element?.closest("[lang]");
+    // The document language remains a fallback for unmarked multilingual text.
+    if (!declared || declared === document.documentElement) return "";
+    return declared.lang.trim().split("-")[0].toLowerCase();
+  }
+
+  /** Detect synchronously using local markup, then text heuristics. */
   function detect(selection) {
+    const declaredLanguage = getSelectionLanguage(selection);
+    if (declaredLanguage) return declaredLanguage;
+
     const selectedText = selection ? selection.toString().trim() : "";
     const surroundingText = getSurroundingText(selection);
     return detectHeuristic(surroundingText, selectedText);
@@ -363,6 +372,9 @@ const LanguageDetector = (() => {
    * @returns {Promise<string>} BCP 47 language tag
    */
   async function detectAsync(selection) {
+    const declaredLanguage = getSelectionLanguage(selection);
+    if (declaredLanguage) return declaredLanguage;
+
     const selectedText = selection ? selection.toString().trim() : "";
     const surroundingText = getSurroundingText(selection);
 
