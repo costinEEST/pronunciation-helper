@@ -15,6 +15,7 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
     - [Firefox](#firefox-1)
   - [Troubleshooting](#troubleshooting)
 - [Usage](#usage)
+- [Local development and testing](#local-development-and-testing)
 - [How Language Detection Works](#how-language-detection-works)
 - [Supported Languages](#supported-languages)
 - [Browser Compatibility](#browser-compatibility)
@@ -150,9 +151,31 @@ Firefox requires extensions to be **signed** for permanent installation. The `.x
 4. Press **Escape** to dismiss the popup
 5. Alternatively, **right-click** a selected word and choose "Pronounce" from the context menu
 
+## Local development and testing
+
+Test the current local extension files in Firefox, including changes that have not been committed or pushed. You need Node.js/npm and Firefox installed. From the repository root, run:
+
+```sh
+npx -y web-ext run --firefox /Applications/Firefox.app/Contents/MacOS/firefox --start-url https://costineest.github.io/hungarian/expresii.html
+```
+
+The explicit Firefox path above is for macOS. Where `web-ext` can discover Firefox, omit `--firefox /Applications/Firefox.app/Contents/MacOS/firefox`.
+
+`npx` downloads Mozilla's `web-ext` tool if needed. This opens a separate temporary Firefox profile with the local extension installed; your normally installed extension stays unchanged. No build, signing, GitHub push, or deployment is required. See [Mozilla's web-ext guide](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/).
+
+1. In the new Firefox window, click **Doar maghiară** and select **Köszönöm.**
+2. Confirm the extension popup displays **Magyar**, then click Play to check pronunciation.
+3. Click **Teljes nézet** and check the Hungarian phrase in the table and a Romanian translation. Also test right-click **Pronounce**.
+
+Keep the command running while testing. Source edits automatically reload the extension; refresh the webpage afterward to load updated content scripts. In the terminal running `web-ext`, press **R** to reload manually or **Ctrl+C** to stop. The temporary installation lasts only for the test session.
+
+This tests your local extension against the published webpage. To test unpublished webpage edits too, serve the webpage repository locally and replace `--start-url` with its localhost URL.
+
+Use `build.sh` for release packaging and signing. Agent instructions for browser investigation and Chrome MCP recovery are in [the project testing skill](.agents/skills/pronunciation-helper-testing/SKILL.md).
+
 ## How Language Detection Works
 
-The extension uses a multi-signal approach with progressive enhancement:
+The extension first respects the nearest `lang` declaration around the selection (for example, a Hungarian section on a Romanian page). Otherwise, it uses a multi-signal approach with progressive enhancement:
 
 1. **Native API (Chrome 138+)** — Uses the browser's built-in `LanguageDetector` API when available for high-accuracy detection
 2. **Selected text priority** — Scores the selected text itself with 3x weight, so the language of what you selected takes precedence over the surrounding page content
@@ -408,6 +431,12 @@ The manifest references the PNGs:
 | 128px | Chrome Web Store listing |
 
 ## Changelog
+
+### 1.3.1 — November 6, 2026
+
+- Respect the nearest language declaration around selected text in both synchronous and asynchronous detection, fixing short Hungarian phrases on Romanian pages.
+- Document local Firefox testing and add a project skill covering browser investigation and Chrome MCP recovery.
+- Track project skills and the skill lockfile in Git.
 
 ### 1.3.0 — May 30, 2026
 
