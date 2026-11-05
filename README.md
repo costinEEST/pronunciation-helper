@@ -44,7 +44,7 @@ A cross-browser extension (Chrome & Firefox) that helps you hear the pronunciati
 - **Cross-browser** — Works in both Chrome (MV3) and Firefox (MV3, 109+)
 - **Accessible** — ARIA live region announcements, keyboard dismissal, focus-visible styles
 - **Respects preferences** — Adapts to light/dark color scheme and reduced motion settings
-- **Lightweight** — No external dependencies, no network requests, fully offline
+- **Lightweight** — No external JavaScript dependencies; language detection runs locally. Speech voices may use online services.
 
 ## Installation
 
@@ -223,7 +223,7 @@ The extension first respects the nearest `lang` declaration around the selection
 
 ## Privacy
 
-This extension collects no data and makes no network requests.
+Read the [Privacy Policy](PRIVACY.md) for details. The extension processes selected text and surrounding webpage content for pronunciation and language detection. It does not send that content to developer-operated servers or persist it.
 
 **What it accesses:**
 
@@ -234,7 +234,7 @@ This extension collects no data and makes no network requests.
 **What it does NOT do:**
 
 - No data collection, storage, or transmission
-- No network requests — fully offline
+- No requests to developer-operated servers; browser speech voices may use online services
 - No cookies, analytics, or telemetry
 - No browsing history tracking
 - No persistent storage (`chrome.storage` is not used)
@@ -247,7 +247,7 @@ This extension collects no data and makes no network requests.
 | `contextMenus` | Registers the "Pronounce" right-click menu item |
 | Content script on `<all_urls>` | Enables the selection popup on any webpage you visit |
 
-All speech synthesis is handled by your operating system's built-in text-to-speech engine (Web Speech API). No audio data leaves your device.
+Speech synthesis uses the browser's Web Speech API. Available voices may be local or provided by an online service, and the extension does not restrict playback to local voices. Selected text may therefore be sent to the speech provider, under that provider's privacy policy.
 
 ## Building a Release
 
